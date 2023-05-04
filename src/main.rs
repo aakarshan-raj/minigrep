@@ -1,18 +1,27 @@
 use std::env;
 use std::process;
-
+use std::fs;
+use std::error::Error;
 fn main(){
 
 let vector:Vec<String> = env::args().collect();
 let config = Config::build(&vector).unwrap_or_else(|err|{
-
         println!("Error cause:{err}");
         process::exit(1);
-
  });
+ 
+   if let Err(e)=run(config){
+	println!("{}",e);
+ 	process::exit(1);     
+   }
 
-println!("search for:{} in: {}",config.query,config.file_path);
+}
 
+
+fn run(config:Config)->Result<(),Box<dyn Error>>{
+   let content = fs::read_to_string(config.file_path)?;
+   println!("{content}");
+   Ok(())
 }
 
 
