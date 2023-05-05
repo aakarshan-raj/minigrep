@@ -4,7 +4,8 @@ use std::error::Error;
 
 pub fn run(config:Config)->Result<(),Box<dyn Error>>{
     let content = fs::read_to_string(config.file_path)?;
-    println!("{content}");
+    let x = tests::search(&config.query, &content);
+    print!("{}",x[0]);
     Ok(())
  }
  
@@ -31,3 +32,26 @@ pub fn run(config:Config)->Result<(),Box<dyn Error>>{
  
  }
  
+ mod tests{
+
+   #[test]
+   fn one_result(){
+      let query = "duct";
+      let contents = "\
+Rust:
+safe, fast, productive
+Pick three.";
+      
+      assert_eq!(vec!["safe, fast, productive"],search(query,contents));
+   }
+   pub fn search<'a>(query: &str,contents:&'a str)->Vec<&'a str>{
+      let mut result:Vec<&str> = Vec::new();
+      for line in contents.lines(){
+         if line.contains(query){
+            result.push(line);
+            break;
+         }
+      }
+        result
+    }
+ }
