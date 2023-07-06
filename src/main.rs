@@ -7,10 +7,13 @@ fn main(){
 
 let vector:Vec<String> = env::args().collect();
 let config = Config::build(&vector).unwrap_or_else(|err|{
-        print!("{err}");
+        eprintln!("{err}");
         process::exit(1);
  });
-  minigrep::run(config);
+  match minigrep::run(config){
+    Err(error)=>{eprintln!("{error}"); process::exit(1)},  
+    _=>(),
+  };
  	
 
 }

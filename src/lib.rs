@@ -1,12 +1,19 @@
 
-use std::fs;
+use std::{fs, env};
 use std::error::Error;
 
 pub fn run(config:Config)->Result<(),Box<dyn Error>>{
     let content = fs::read_to_string(config.file_path)?;
+    if(config.case == false){
+      for line in  tests::search_sensitive(&config.query, &content){
+         print!("{}\n",line);
+         }
+    }
+    else if(config.case == true){
     for line in  tests::search_insensitive(&config.query, &content){
     print!("{}\n",line);
     }
+   }
     Ok(())
  }
  
@@ -15,6 +22,7 @@ pub fn run(config:Config)->Result<(),Box<dyn Error>>{
  
  pub query:String,
  pub file_path:String,
+ pub case:bool,
  
  }
  
@@ -27,8 +35,8 @@ pub fn run(config:Config)->Result<(),Box<dyn Error>>{
         }
         let query = vector[1].clone();
         let file_path = vector[2].clone();
-        Ok(Config{query,file_path})
- 
+        let case =  env::var("IGNORE_CASE").is_ok();
+        Ok(Config{query,file_path,case})
     }
  
  }
