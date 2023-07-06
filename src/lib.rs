@@ -4,7 +4,7 @@ use std::error::Error;
 
 pub fn run(config:Config)->Result<(),Box<dyn Error>>{
     let content = fs::read_to_string(config.file_path)?;
-    for line in  tests::search_sensitive(&config.query, &content){
+    for line in  tests::search_insensitive(&config.query, &content){
     print!("{}\n",line);
     }
     Ok(())
@@ -63,7 +63,7 @@ Idk many
   pub fn search_insensitive<'a>(query:&str,contents:&'a str)->Vec<&'a str>{
       let mut found:Vec<&str> = Vec::new();
       for line in contents.lines(){
-         if line.to_lowercase().contains(query){
+         if line.to_lowercase().contains(&query.to_lowercase()){
              found.push(line);
          }
       }
