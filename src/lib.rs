@@ -4,7 +4,7 @@ use std::error::Error;
 
 pub fn run(config:Config)->Result<(),Box<dyn Error>>{
     let content = fs::read_to_string(config.file_path)?;
-    for line in  tests::search(&config.query, &content){
+    for line in  tests::search_sensitive(&config.query, &content){
     print!("{}\n",line);
     }
     Ok(())
@@ -36,16 +36,41 @@ pub fn run(config:Config)->Result<(),Box<dyn Error>>{
  mod tests{
 
    #[test]
-   fn one_result(){
+   fn case_sensitve(){
       let query = "duct";
       let contents = "\
 Rust:
 safe, fast, productive
 Pick three.";
       
-      assert_eq!(vec!["safe, fast, productive"],search(query,contents));
+      assert_eq!(vec!["safe, fast, productive"],search_sensitive(query,contents));
    }
-   pub fn search<'a>(query: &str,contents:&'a str)->Vec<&'a str>{
+
+
+#[test]
+fn case_insensitve(){
+
+  let query =  "many";
+  let content = "\
+Many more
+Idk many
+  ";
+  assert_eq!(vec!["Many more","Idk many"],search_insensitive(query, content));
+
+}
+
+
+  pub fn search_insensitive<'a>(query:&str,contents:&'a str)->Vec<&'a str>{
+      let mut found:Vec<&str> = Vec::new();
+      for line in contents.lines(){
+         if line.to_lowercase().contains(query){
+             found.push(line);
+         }
+      }
+      found
+  }
+
+   pub fn search_sensitive<'a>(query: &str,contents:&'a str)->Vec<&'a str>{
       let mut result:Vec<&str> = Vec::new();
       for line in contents.lines(){
          if line.contains(query){
